@@ -1,5 +1,7 @@
 class Sqlite3DbDownloader {
-    constructor() {}
+    constructor() {
+        this.SQL = null
+    }
     async download(name='users', ext='db') {
         Loading.show()
         this.zip = new JSZip()
@@ -23,13 +25,17 @@ class Sqlite3DbDownloader {
         return 'UNIX'
     }
     async #makeDb() {
-        const SQL = await initSqlJs({locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`})
+        if (!this.SQL) {
+            this.SQL = await initSqlJs({locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`})
+        }
         //const SQL = await initSqlJs({locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.7.0/${file}`})
-        const db = new SQL.Database();
+        const db = new this.SQL.Database();
         let res = JSON.stringify(db.exec("SELECT sqlite_version();"));
         console.debug(res)
         res = JSON.stringify(db.exec(`CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT);`));
         console.debug(res)
+        //res = JSON.stringify(db.exec(`.tables`)); // .コマンドは使えなかった
+        //console.debug(res)
         const values = document.getElementById('usernames').value.split('\n').filter(v=>v).map(n=>`('${n}')`).join(',')
         res = JSON.stringify(db.exec(`INSERT INTO users(name) VALUES ${values || "('ytyaru')"};`));
         //res = JSON.stringify(db.exec(`INSERT INTO users(name) VALUES ('ytyaru');`));

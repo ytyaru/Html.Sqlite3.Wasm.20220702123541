@@ -69,8 +69,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     //Loading.hide()
     */
 
+    const downloader = new Sqlite3DbDownloader()
     document.getElementById('download').addEventListener('click', async(event) => {
-        const downloader = new Sqlite3DbDownloader()
         downloader.download() 
     })
     /*
